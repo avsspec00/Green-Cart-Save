@@ -1,0 +1,38 @@
+{
+  "summary": "Advertiser/Sponsorship system tested end-to-end on Green Cart Save. Backend: 16/16 pytest cases passed (admin login, /admin/me auth, advertiser CRUD with cascade, sponsorship CRUD with advertiser_name resolution, public /api/sponsorships/active ordering by bid desc, pause via PATCH removes from public list). Frontend (390x844 Expo web preview): all 10 critical flows passed — Admin tab with briefcase icon visible in bottom nav, login form (admin-email-input/admin-password-input/admin-login-btn) renders, wrong-password shows 'Incorrect email or password' via admin-login-error, correct creds reveal Dashboard with segments + FAB + logout, created TEST_UI_Brand advertiser via 'New advertiser' modal, created sponsorship for product p17 (Cola) at $50.00 via 'New sponsorship' modal, Shop tab showed sponsored-tag-p17 yellow 'Sponsored' badge after focus, pausing sponsorship from Admin removed the badge on next Shop focus, delete sponsorship + delete advertiser worked, admin-logout-btn returned to login and cleared greencart.admin.token from localStorage. Pre-existing FreshMart→p3 sponsorship from prior smoke-tests was observed (expected test data, not a regression). Deprecation warnings detected: 'shadow*' style props and 'props.pointerEvents' — same as iteration_1, non-blocking on RN/web.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "global", "issues": ["Deprecation warnings persist (already noted iteration_1): 'shadow*' style props and 'props.pointerEvents' on Expo web. Non-blocking."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_admin_sponsorships.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Replace shadow* StyleSheet props with boxShadow in src/theme.ts to silence web deprecation warning.",
+    "(Optional) Move pointerEvents='none' from prop to style on the viewfinder View in app/(tabs)/scan.tsx."
+  ],
+  "critical_code_review_comments": [
+    "server.py is clean (~350 lines): proper async/await with motor, all reads use {_id:0} projection, UUID ids, bcrypt password hashing, JWT via OAuth2PasswordBearer, lifespan-based idempotent admin seeding (rehashes on credential change).",
+    "Cascade delete: deleting an advertiser triggers sponsorships.delete_many({advertiser_id}) — verified by automated test.",
+    "Public /api/sponsorships/active resolves advertiser names in a single batched query (no N+1).",
+    "admin.tsx (~870 lines) is large but each sub-component is single-responsibility; if it grows further consider splitting Dashboard/SponsorshipForm into separate files.",
+    "Frontend uses process.env.EXPO_PUBLIC_BACKEND_URL via src/utils/api.ts (verified).",
+    "All interactive elements expose stable testIDs (admin-*, seg-*, pick-adv-*, pick-product-*, sponsorship-*, advertiser-*, sponsored-tag-*) — excellent test surface.",
+    "Sponsorship ordering on Shop is global (highest-bid sponsored products float to the top across categories). 'Appears first in its category' is satisfied because category filter narrows the list and the sponsored item remains hoisted within it. Behavior matches the highest-bid-wins requirement."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_admin_sponsorships.py (new)"
+  ],
+  "success_rate": {"backend": "100% (16/16)", "frontend": "100% (10/10)"},
+  "seed_data_creation": "Tests are self-cleaning: create+delete TEST_-prefixed advertisers & sponsorships within each run. Pre-existing FreshMart/p3 row from earlier curl smoke-tests is left untouched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend: pytest /app/backend/tests/test_admin_sponsorships.py covers all admin + sponsorship endpoints, uses form-encoded login (OAuth2PasswordRequestForm). Frontend: mobile viewport 390x844 against https://green-cart-scan.preview.emergentagent.com. Admin tab is 5th bottom-tab (briefcase). Auth token persisted in localStorage key 'greencart.admin.token'. Sponsored badge testID: sponsored-tag-{product_id}. Product picker inside SponsorshipForm exposes pick-product-p1..p28. Pre-existing FreshMart advertiser + p3 sponsorship may be present — treat as fixture, not a bug.",
+  "rca_of_issue": "N/A — no bugs found, feature works end-to-end."
+}
