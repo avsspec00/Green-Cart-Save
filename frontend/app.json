@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Scan grocery barcodes to add items to your cart."
-      }
+      },
+      "bundleIdentifier": "com.emergent.greencartsave.is4mo0"
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +21,10 @@
         "backgroundColor": "#10B981"
       },
       "edgeToEdgeEnabled": true,
-      "permissions": ["android.permission.CAMERA"]
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "com.emergent.greencartsave.is4mo0"
     },
     "web": {
       "bundler": "metro",
