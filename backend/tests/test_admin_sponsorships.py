@@ -13,11 +13,11 @@ import uuid
 import pytest
 import requests
 
-BASE_URL = os.environ.get("EXPO_BACKEND_URL", "https://green-cart-scan.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ["EXPO_BACKEND_URL"].rstrip("/")
 API = f"{BASE_URL}/api"
 
-ADMIN_EMAIL = "admin@greencartsave.com"
-ADMIN_PASSWORD = "GreenAdmin2026!"
+ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
 
 
 @pytest.fixture(scope="module")
